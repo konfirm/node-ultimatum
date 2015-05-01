@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+- '0.12'
+- '0.11'
+- '0.10'
+- iojs
+after_script: ./node_modules/.bin/lab -r lcov | ./node_modules/.bin/coveralls
+notifications:
+  slack:
+    secure: e9dPz7wCXeEsYYu9wBwaeMezKshfDei1Gczi4H0yw6xRCcsPTHKIyn8crpARiVyTFE4Qnjd9uumkWUkCRdKMkD0SnvzlthR/CprMK6WyjR4PHDHH4nqXv8xOu02Z2RtZQiOewBCwg/6W1mD5R7fshw8Y9XrQYmIT0gxvShTAujQ=
