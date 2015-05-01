@@ -1,0 +1,15 @@
+{
+  "name": "ultimatum",
+  "version": "0.0.0",
+  "description": "easy to manage timings",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rogier Spieker",
+  "license": "GPLv2",
+  "dependencies": {
+    "polymorphic": "^1.2.0",
+    "timer.js": "^0.2.0"
+  }
+}
