@@ -1,4 +1,9 @@
-# Ultimatum
+[![npm version](https://badge.fury.io/js/ultimatum.svg)](http://badge.fury.io/js/ultimatum)
+[![Build Status](https://travis-ci.org/konfirm/node-ultimatum.svg?branch=master)](https://travis-ci.org/konfirm/node-ultimatum)
+[![Coverage Status](https://coveralls.io/repos/konfirm/node-polymorphic/badge.svg?branch=master)](https://coveralls.io/r/konfirm/node-ultimatum?branch=master)
+[![Codacy Badge](https://www.codacy.com/project/badge/f0865afea73f4b3f9f7cc4fd1c60510a)](https://www.codacy.com/app/rogier/node-ultimatum)
+
+# node-ultimatum
 Timing management, simplified. Create timeouts, intervals, schedule tasks, postpone timeouts/intervals, respond to events
 
 ## Concept
@@ -9,44 +14,5 @@ Create an Ultimatum for a callback function, the Ultimatum can then be postponed
 npm install --save ultimatum
 ```
 
-## Usage
-```js
-var Ultimatum = require('ultimatum'),
-	myUltimatum = new Ultimatum();
-
-function myCallback(error, event) {
-	if (error) {
-		throw error;
-	}
-
-	console.log(event);
-	/*
-		{
-			type: 'timeout',
-			start: timestamp,
-			overdue: 100µs
-		}
-	*/
-}
-
-myUltimatum.start({
-	timeout: 1000,
-	interval: '5 minutes',
-	postpone: 5,
-	callback: myCallback
-});
-```
-
-## API
-```js
-var Ultimatum = require('ultimatum');
-	myUltimatum = new Ultimatum({
-		//  affected by pause, reset
-		interval: '5 minutes',  //  trigger every 5 minutes, default undefined - no interval
-		timeout: 1000,          //  trigger in 1000ms, default undefined - no timeout
-		//  affected by reset
-		postpone: 5,            //  trigger when postponed 5 times, default undefined - no enforced triggers
-								//  also resets and moves forward any timeout and resets interval
-		until: '1 hour',        //  stop after 1 hour of operation, default Infinity - never stop
-	});
-```
+## License
+GPLv2 © [Konfirm](https://konfirm.eu)

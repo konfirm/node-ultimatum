@@ -1,15 +1,40 @@
 {
   "name": "ultimatum",
   "version": "0.0.0",
-  "description": "easy to manage timings",
-  "main": "index.js",
+  "description": "Smarter Timings. Run at intervals, set timeouts, schedule at specific times, postpone intervals/timeouts",
+  "main": "lib/ultimatum.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/lab -f -t 100 -m 3000",
+    "test-coverage": "./node_modules/.bin/lab -f -r html -m 3000 -o report.html"
   },
   "author": "Rogier Spieker",
   "license": "GPLv2",
+  "bugs": {
+    "url": "https://github.com/konfirm/node-ultimatum/issues"
+  },
+  "homepage": "https://github.com/konfirm/node-ultimatum",
   "dependencies": {
-    "polymorphic": "^1.2.0",
-    "timer.js": "^0.2.0"
+    "polymorphic": "^1.2.0"
+  },
+  "devDependencies": {
+    "code": "^1.4.0",
+    "coveralls": "^2.11.2",
+    "lab": "^5.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/konfirm/node-ultimatum.git"
+  },
+  "keywords": [
+    "timer",
+    "timing",
+    "interval",
+    "schedule"
+  ],
+  "engines": {
+    "node": ">=0.10"
   }
 }
