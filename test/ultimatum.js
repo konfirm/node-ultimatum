@@ -44,14 +44,14 @@ lab.experiment('Ultimatum', function() {
 			Code.expect(stalled).to.equal(2);
 
 			done();
-		}, 100, 1000);
+		}, 100, new Date(Date.now() + 1000));
 
 		task.on('stall', function(summary) {
 			stalled = summary.stalled;
 
 			if (summary.stalled < 2) {
 				setTimeout(function() {
-					task.stall(100);
+					task.stall();
 				}, 100);
 			}
 		});
@@ -69,6 +69,25 @@ lab.experiment('Ultimatum', function() {
 
 			done();
 		}, 100, 1000);
+
+		task.stall(2000);
+
+	});
+
+	lab.test('Rejecting a stall request', function(done) {
+		var start = Date.now(),
+			task;
+
+		task = new Ultimatum(function() {
+			Code.expect(Date.now() - start).to.be.above(999);
+			Code.expect(Date.now() - start).to.be.below(1010);
+
+			done();
+		}, 100, 1000);
+
+		task.on('stall', function(summary) {
+			summary.reject();
+		});
 
 		task.stall(2000);
 
