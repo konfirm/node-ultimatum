@@ -12,7 +12,8 @@ lab.experiment('Ultimatum', function() {
 			task;
 
 		task = new Ultimatum(function() {
-			Code.expect(Date.now() - start).to.be.below(110);
+			Code.expect(Date.now() - start).to.be.above(99);
+			Code.expect(Date.now() - start).to.be.below(115);
 
 			done();
 		}, 100, 1000);
@@ -23,8 +24,8 @@ lab.experiment('Ultimatum', function() {
 			task;
 
 		task = new Ultimatum(function() {
-			Code.expect(Date.now() - start).to.be.above(110);
-			Code.expect(Date.now() - start).to.be.below(210);
+			Code.expect(Date.now() - start).to.be.above(199);
+			Code.expect(Date.now() - start).to.be.below(215);
 
 			done();
 		}, '100ms', '1s');
@@ -39,8 +40,8 @@ lab.experiment('Ultimatum', function() {
 			task;
 
 		task = new Ultimatum(function() {
-			Code.expect(Date.now() - start).to.be.above(200);
-			Code.expect(Date.now() - start).to.be.below(310);
+			Code.expect(Date.now() - start).to.be.above(199);
+			Code.expect(Date.now() - start).to.be.below(315);
 			Code.expect(stalled).to.equal(2);
 
 			done();
@@ -67,8 +68,8 @@ lab.experiment('Ultimatum', function() {
 			task;
 
 		task = new Ultimatum(function() {
-			Code.expect(Date.now() - start).to.be.above(900);
-			Code.expect(Date.now() - start).to.be.below(1010);
+			Code.expect(Date.now() - start).to.be.above(999);
+			Code.expect(Date.now() - start).to.be.below(1015);
 
 			done();
 		}, 100, 1000);
@@ -82,8 +83,8 @@ lab.experiment('Ultimatum', function() {
 			task;
 
 		task = new Ultimatum(function() {
-			Code.expect(Date.now() - start).to.be.above(100);
-			Code.expect(Date.now() - start).to.be.below(110);
+			Code.expect(Date.now() - start).to.be.above(99);
+			Code.expect(Date.now() - start).to.be.below(115);
 
 			done();
 		}, 100, 1000);
@@ -102,7 +103,7 @@ lab.experiment('Ultimatum', function() {
 			task;
 
 		task = new Ultimatum(function() {
-			Code.expect(Date.now() - start).to.be.below(10);
+			Code.expect(Date.now() - start).to.be.below(15);
 
 			done();
 		}, 100, 1000);
@@ -120,8 +121,8 @@ lab.experiment('Ultimatum', function() {
 			task;
 
 		task = new Ultimatum(function() {
-			Code.expect(Date.now() - start).to.be.above(1000);
-			Code.expect(Date.now() - start).to.be.below(1010);
+			Code.expect(Date.now() - start).to.be.above(999);
+			Code.expect(Date.now() - start).to.be.below(1015);
 
 			done();
 		}, 100, 1000);
@@ -141,8 +142,8 @@ lab.experiment('Ultimatum', function() {
 		task.on('execute', function(summary) {
 			task.stall();
 
-			Code.expect(Date.now() - start).to.be.above(100);
-			Code.expect(Date.now() - start).to.be.below(110);
+			Code.expect(Date.now() - start).to.be.above(99);
+			Code.expect(Date.now() - start).to.be.below(115);
 
 			done();
 		});
@@ -177,4 +178,79 @@ lab.experiment('Ultimatum', function() {
 
 	});
 
+	lab.test('Repeating ultimatums', function(done) {
+		var start = Date.now(),
+			count = 0,
+			task, timer, end;
+
+		task = new Ultimatum(function() {
+		}, 100, 1000, 2);
+
+		task.on('execute', function(summary) {
+			end = Date.now();
+			++count;
+
+			clearTimeout(timer);
+			timer = setTimeout(function() {
+				Code.expect(count).to.equal(2);
+				Code.expect(end - start).to.be.above(199);
+				Code.expect(end - start).to.be.below(215);
+
+				done();
+			}, 1000);
+		});
+
+	});
+
+	lab.experiment('Accepting stall requests', function(){
+		lab.test('no explicit interval', function(done) {
+			var start = Date.now(),
+				task;
+
+			task = new Ultimatum(function() {
+				Code.expect(Date.now() - start).to.be.above(199);
+				Code.expect(Date.now() - start).to.be.below(215);
+
+				done();
+			}, 100, 1000);
+
+			task.stall();
+		});
+
+		lab.test('explicit interval', function(done) {
+			var start = Date.now(),
+				task;
+
+			task = new Ultimatum(function() {
+				Code.expect(Date.now() - start).to.be.above(149);
+				Code.expect(Date.now() - start).to.be.below(165);
+
+				done();
+			}, 100, 1000, 0, 50);
+
+			task.stall();
+		});
+	});
+
+	lab.test('Undefined `repeat` + numeric `interval`, runs until cancel', function(done) {
+		var count = 0,
+			ended = false,
+			task;
+
+		task = new Ultimatum(function() {
+			if (ended) {
+				throw new Error('running after cancel');
+			}
+			++count;
+		}, 100, 1000, undefined, 50);
+
+		setTimeout(function() {
+			ended = true;
+			task.cancel();
+
+			setTimeout(function() {
+				done();
+			}, 200);
+		}, 550);
+	});
 });
