@@ -54,6 +54,8 @@ lab.experiment('Ultimatum', function() {
 					task.stall();
 				}, 100);
 			}
+
+			summary.accept();
 		});
 
 		task.stall(100);
@@ -79,8 +81,8 @@ lab.experiment('Ultimatum', function() {
 			task;
 
 		task = new Ultimatum(function() {
-			Code.expect(Date.now() - start).to.be.above(999);
-			Code.expect(Date.now() - start).to.be.below(1010);
+			Code.expect(Date.now() - start).to.be.above(100);
+			Code.expect(Date.now() - start).to.be.below(110);
 
 			done();
 		}, 100, 1000);
