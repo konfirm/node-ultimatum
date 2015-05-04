@@ -16,9 +16,7 @@
     "url": "https://github.com/konfirm/node-ultimatum/issues"
   },
   "homepage": "https://github.com/konfirm/node-ultimatum",
-  "dependencies": {
-    "polymorphic": "^1.2.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "code": "^1.4.0",
     "coveralls": "^2.11.2",
