@@ -164,6 +164,41 @@ setTimeout(function() {
 
 *note*: you can choose to execute the Ultimatum immediatly within every stall event, the `reject` method provided accept an optional argument, `reject([bool terminate])`. By calling `.reject(true)`, the Ultimatum does not wait for the any soft or hard deadline but execute immediatly (and reschedule if the Ultimatum can be repeated).
 
+## Real-world example
+Imagine you are creating an website/api and you wish to show/update statistics regularly but you want to throttle the amount of updates you trigger when there's a lot of traffic, here's a basic example for that scenario.
+```js
+'use strict';
+
+var http = require('http'),
+	Ultimatum = require('ultimatum'),
+	counter = 0,
+	server, task;
+
+//  this is the 'status' function, logging to the console
+function status() {
+	console.log('[%s] served %d requests', new Date(), counter);
+}
+
+//  create an ultimatum, which runs `status` every 1 second, but at least every 10 seconds if there is heavy traffic
+task = new Ultimatum(status, '1s', '10s', Infinity);
+
+http
+	.createServer(function(request, response) {
+		//  stall the task
+		task.stall();
+		//  increase the counter
+		++counter;
+
+		//  respond
+		response.writeHead(200, { 'Content-Type': 'text/plain'});
+		response.write('OK');
+		response.end();
+	})
+	.listen(3000)
+;
+```
+This example will 'tick' a console log message every second, unless there is/was traffic, for each request the logging is delayed by 1 second (to at most 10 seconds).
+
 
 ## License
 GPLv2 © [Konfirm](https://konfirm.eu)
