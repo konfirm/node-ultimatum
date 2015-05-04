@@ -15,6 +15,77 @@ Create an Ultimatum for a callback function, the Ultimatum can then be postponed
 npm install --save ultimatum
 ```
 
+## API
+
+### `Ultimatum(callback, soft, hard [, repeat [, interval]])`
+* `callback` is the function to be executed
+* `soft` is the 'soft' (desired) time to execute the Ultimatum - this is the value than can be influence using `stall`
+* `hard` is the 'hard' (deadline) time to execute the Ultimatum
+* `repeat` is the number of times to repeat the Ultimatum [optional, default undefined - 0 (or `Infinity` if `interval` (below) is specified)]
+* `interval` is the default interval to use when calling `stall` [optional, default undefined - the value of `soft`]
+
+**Note** that both `soft` and `hard` deadlines allow for various ways to provide a time:
+- `int milliseconds` - timeout specified in milliseconds (this is probably the most intuitive for developers, as it is similar to `setTimeout` and `setInterval`)
+- `string format` - timeout specified in a human readable fashion, e.g. '1 week, 2 days, 3 hours, 4 minutes, 5 seconds and 6 milliseconds', all options are:
+  * milliseconds: `ms`, `millisecond`, `milliseconds` (and as a result of how crude the parser is: `millis`, `msecond`, `mseconds` will also work)
+  * seconds (1000x milliseconds): `s`, `second`, `seconds`
+  * minutes (60x seconds): `m`, `min`, `minute`, `minutes`
+  * hours (60x minutes): `h`, `hour`, `hours`
+  * days (24x hours): `d`, `day`, `days`
+  * week (7x days): `w`, `week`, `weeks`
+
+#### `Ultimatum.stall([milliseconds])`
+Request the Ultimatum to be stalled by `milliseconds` (which defaults to the `interval` determined at construction of the Ultimatum, either explicitly or implicitly (where it is the same as the `soft` deadline interval)), accepting the 'stall' will move (_only_) the 'soft' deadline, if stalling the Ultimatum exceeds the 'hard' deadline, the Ultimatum _will be executed_.
+Whenever the `stall` method is called, a 'stall'-event is created, which must be either `accept`- or `reject`-ed. If no listeners for 'stall'-events are configured, it will be automatically be accepted.
+
+#### `Ultimatum.cancel()`
+Cancel the Ultimatum, this will shut down and clean up the Ultimatum, causing it to never be executed.
+
+### Events
+Nearly every action an Ultimatum does/receives has an event, most are purely informational, except for `stall`-events, which _must_ be handled if they are handled.
+All event handlers will receive a single argument containing an object which hold a lot of information about the internal state of the Ultimatum.
+The follow structure will always be provided:
+```js
+{
+    type: '<event>',  //  one of: stall, repeat, cancel, desire, expire, execute
+    stalled: 0,       //  the number of stall requests
+    duration: 1234,   //  the number of milliseconds the Ultimatum is active
+    repeat: 0,        //  the number of times the Ultimatum will be repeated after execution
+    expiration: {
+        soft: 123,    //  the time in milliseconds until the soft deadline ('desire'-event)
+        hard: 1234    //  the time in milliseconds until the hard deadline ('expire'-event)
+    }
+}
+```
+
+#### `repeat`-event
+The Ultimatum is rescheduled after it expired, this will only happen if the `repeat` parameter was provided during construction
+
+#### `cancel`-event
+The Ultimatum is cancelled.
+
+#### `desire`-event
+The Ultimatum will execute as the desired (soft) deadline (this does include any accepted `stall`-requests) is reached
+
+#### `expire`-event
+The Ultimatum will execute as the (hard) deadline is reached
+
+#### `execute`-event
+The Ultimatum is executed
+
+#### `stall`-event
+A request to stall the Ultimatum, the argument will be the object described aboved, with the following additions
+```js
+{
+    //  default summary object, plus:
+    amount: 123,         //  the number of milliseconds the (soft) deadline should be moved
+    accept: function,    //  the function to call if the stall is acceptable
+    reject: function     //  the function to call is the stall is not te be accepted, optionally provide `bool true` to execute the Ultimatum immediatly,
+                         //  if the boolean value is ommited it is regarded as `false`-ish (reject, but do not terminate the Ultimatum)
+}
+```
+
+
 ## Usage
 ### Creating an Ultimatum
 ```js
@@ -92,6 +163,41 @@ setTimeout(function() {
 ```
 
 *note*: you can choose to execute the Ultimatum immediatly within every stall event, the `reject` method provided accept an optional argument, `reject([bool terminate])`. By calling `.reject(true)`, the Ultimatum does not wait for the any soft or hard deadline but execute immediatly (and reschedule if the Ultimatum can be repeated).
+
+## Real-world example
+Imagine you are creating an website/api and you wish to show/update statistics regularly but you want to throttle the amount of updates you trigger when there's a lot of traffic, here's a basic example for that scenario.
+```js
+'use strict';
+
+var http = require('http'),
+	Ultimatum = require('ultimatum'),
+	counter = 0,
+	server, task;
+
+//  this is the 'status' function, logging to the console
+function status() {
+	console.log('[%s] served %d requests', new Date(), counter);
+}
+
+//  create an ultimatum, which runs `status` every 1 second, but at least every 10 seconds if there is heavy traffic
+task = new Ultimatum(status, '1s', '10s', Infinity);
+
+http
+	.createServer(function(request, response) {
+		//  stall the task
+		task.stall();
+		//  increase the counter
+		++counter;
+
+		//  respond
+		response.writeHead(200, { 'Content-Type': 'text/plain'});
+		response.write('OK');
+		response.end();
+	})
+	.listen(3000)
+;
+```
+This example will 'tick' a console log message every second, unless there is/was traffic, for each request the logging is delayed by 1 second (to at most 10 seconds).
 
 
 ## License

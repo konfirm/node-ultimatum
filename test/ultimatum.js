@@ -202,7 +202,7 @@ lab.experiment('Ultimatum', function() {
 
 	});
 
-	lab.experiment('Accepting stall requests', function(){
+	lab.experiment('Stall requests', function(){
 		lab.test('no explicit interval', function(done) {
 			var start = Date.now(),
 				task;
@@ -230,6 +230,26 @@ lab.experiment('Ultimatum', function() {
 
 			task.stall();
 		});
+
+		lab.test('multiple accept/reject only affect the first', function(done) {
+			var start = Date.now(),
+				task;
+
+			task = new Ultimatum(function() {
+				Code.expect(Date.now() - start).to.be.above(149);
+				Code.expect(Date.now() - start).to.be.below(165);
+
+				done();
+			}, 100, 1000, 0, 50);
+
+			task.on('stall', function(stall) {
+				stall.accept();
+				stall.accept();
+				stall.reject();
+			});
+
+			task.stall();
+		});
 	});
 
 	lab.test('Undefined `repeat` + numeric `interval`, runs until cancel', function(done) {
@@ -241,6 +261,7 @@ lab.experiment('Ultimatum', function() {
 			if (ended) {
 				throw new Error('running after cancel');
 			}
+
 			++count;
 		}, 100, 1000, undefined, 50);
 
