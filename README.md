@@ -34,12 +34,56 @@ npm install --save ultimatum
   * days (24x hours): `d`, `day`, `days`
   * week (7x days): `w`, `week`, `weeks`
 
-### `Ultimatum.stall([milliseconds])`
+#### `Ultimatum.stall([milliseconds])`
 Request the Ultimatum to be stalled by `milliseconds` (which defaults to the `interval` determined at construction of the Ultimatum, either explicitly or implicitly (where it is the same as the `soft` deadline interval)), accepting the 'stall' will move (_only_) the 'soft' deadline, if stalling the Ultimatum exceeds the 'hard' deadline, the Ultimatum _will be executed_.
 Whenever the `stall` method is called, a 'stall'-event is created, which must be either `accept`- or `reject`-ed. If no listeners for 'stall'-events are configured, it will be automatically be accepted.
 
-### `Ultimatum.cancel()`
+#### `Ultimatum.cancel()`
 Cancel the Ultimatum, this will shut down and clean up the Ultimatum, causing it to never be executed.
+
+### Events
+Nearly every action an Ultimatum does/receives has an event, most are purely informational, except for `stall`-events, which _must_ be handled if they are handled.
+All event handlers will receive a single argument containing an object which hold a lot of information about the internal state of the Ultimatum.
+The follow structure will always be provided:
+```js
+{
+    type: '<event>',  //  one of: stall, repeat, cancel, desire, expire, execute
+    stalled: 0,       //  the number of stall requests
+    duration: 1234,   //  the number of milliseconds the Ultimatum is active
+    repeat: 0,        //  the number of times the Ultimatum will be repeated after execution
+    expiration: {
+        soft: 123,    //  the time in milliseconds until the soft deadline ('desire'-event)
+        hard: 1234    //  the time in milliseconds until the hard deadline ('expire'-event)
+    }
+}
+```
+
+#### `repeat`-event
+The Ultimatum is rescheduled after it expired, this will only happen if the `repeat` parameter was provided during construction
+
+#### `cancel`-event
+The Ultimatum is cancelled.
+
+#### `desire`-event
+The Ultimatum will execute as the desired (soft) deadline (this does include any accepted `stall`-requests) is reached
+
+#### `expire`-event
+The Ultimatum will execute as the (hard) deadline is reached
+
+#### `execute`-event
+The Ultimatum is executed
+
+#### `stall`-event
+A request to stall the Ultimatum, the argument will be the object described aboved, with the following additions
+```js
+{
+    //  default summary object, plus:
+    amount: 123,         //  the number of milliseconds the (soft) deadline should be moved
+    accept: function,    //  the function to call if the stall is acceptable
+    reject: function     //  the function to call is the stall is not te be accepted, optionally provide `bool true` to execute the Ultimatum immediatly,
+                         //  if the boolean value is ommited it is regarded as `false`-ish (reject, but do not terminate the Ultimatum)
+}
+```
 
 
 ## Usage
