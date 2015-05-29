@@ -7,6 +7,7 @@
     "test": "test"
   },
   "scripts": {
+    "posttest": "./node_modules/.bin/nsp audit-package",
     "test": "./node_modules/.bin/lab -f -t 100 -m 3000",
     "test-coverage": "./node_modules/.bin/lab -f -r html -m 3000 -o report.html"
   },
@@ -20,7 +21,8 @@
   "devDependencies": {
     "code": "^1.4.0",
     "coveralls": "^2.11.2",
-    "lab": "^5.8.0"
+    "lab": "^5.9.0",
+    "nsp": "^1.0.1"
   },
   "repository": {
     "type": "git",
