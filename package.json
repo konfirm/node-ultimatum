@@ -1,6 +1,6 @@
 {
   "name": "ultimatum",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Smarter Timings. Run at intervals, set timeouts, schedule at specific times, postpone intervals/timeouts",
   "main": "lib/ultimatum.js",
   "directories": {
