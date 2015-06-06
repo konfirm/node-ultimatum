@@ -201,4 +201,4 @@ This example will 'tick' a console log message every second, unless there is/was
 
 
 ## License
-GPLv2 © [Konfirm](https://konfirm.eu)
+GPLv2 © [Konfirm ![Open](https://kon.fm/open.svg)](//kon.fm/site)
