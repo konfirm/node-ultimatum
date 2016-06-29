@@ -1,13 +1,13 @@
 {
   "name": "ultimatum",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Smarter Timings. Run at intervals, set timeouts, schedule at specific times, postpone intervals/timeouts",
   "main": "lib/ultimatum.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "posttest": "./node_modules/.bin/nsp audit-package",
+    "posttest": "./node_modules/.bin/nsp check",
     "test": "./node_modules/.bin/lab -f -t 100 -m 3000",
     "test-coverage": "./node_modules/.bin/lab -f -r html -m 3000 -o report.html"
   },
@@ -19,10 +19,10 @@
   "homepage": "https://github.com/konfirm/node-ultimatum",
   "dependencies": {},
   "devDependencies": {
-    "code": "^1.4.1",
-    "coveralls": "^2.11.3",
-    "lab": "^5.13.0",
-    "nsp": "^1.0.3"
+    "code": "^3.0.1",
+    "coveralls": "^2.11.9",
+    "lab": "^10.8.2",
+    "nsp": "^2.5.0"
   },
   "repository": {
     "type": "git",
@@ -35,6 +35,6 @@
     "schedule"
   ],
   "engines": {
-    "node": ">=0.10"
+    "node": ">=4"
   }
 }
