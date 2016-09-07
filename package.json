@@ -19,10 +19,10 @@
   "homepage": "https://github.com/konfirm/node-ultimatum",
   "dependencies": {},
   "devDependencies": {
-    "code": "^3.0.1",
-    "coveralls": "^2.11.9",
-    "lab": "^10.8.2",
-    "nsp": "^2.5.0"
+    "code": "^3.0.2",
+    "coveralls": "^2.11.12",
+    "lab": "^11.0.1",
+    "nsp": "^2.6.1"
   },
   "repository": {
     "type": "git",
